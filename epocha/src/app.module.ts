@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { EpochaController } from './epocha/epocha.controller';
 import { EpochaModule } from './epocha/epocha.module';
+import { EpochaService } from './epocha/epocha.service';
 
 @Module({
   imports: [EpochaModule],
-  controllers: [AppController, EpochaController],
-  providers: [AppService],
+  controllers: [EpochaController],
+  providers: [EpochaService],
 })
 export class AppModule {}
