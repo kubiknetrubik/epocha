@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Коллекция</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+  <div class="phone-container screen-grid">
+    
+    <form action="/grid" method="GET" class="search-form" id="searchForm">
+      <input 
+        type="number" 
+        name="lowlimit" 
+        class="search-input" 
+        placeholder="Введите нижнюю границу" 
+        value="{{lowlimit}}" 
+        onkeydown="if(event.key === 'Enter') event.preventDefault();"
+      />
+      <button type="submit" class="search-search">Искать</button>
+    </form>
+
+    <div class="grid-container">
+      {{#each dicts}}
+        <a href="/home/{{this.id}}" class="grid-card">
+          <div class="grid-card-img-wrapper">
+            <img src="{{this.imageUrl}}" alt="{{this.title}}" class="grid-card-img" />
+          </div>
+          <div class="grid-card-content">
+            <h3 class="grid-card-title">{{this.title}}</h3>
+            
+            <div class="grid-card-likes">
+              <img src="/heart.svg" alt="Лайк" class="heart-grid" />
+              <span class="likes-counter">{{this.likes}}</span>
+            </div>
+
+            <div class="grid-card-limit">
+              Начальная граница: {{this.lowlimit}}
+            </div>
+          </div>
+        </a>
+      {{/each}}
+    </div>
+
+    {{> navbar}}
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{dict.title}}</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="phone-container">
+
+    <video class="bg-video" autoplay muted loop playsinline>
+      <source src="{{dict.videoUrl}}" type="video/mp4">
+    </video>
+
+    <div class="actions-sidebar">
+      <button class="action-btn">
+        <img src="/heart.svg" alt="Лайк" class="action-icon" />
+        <span>{{likesCount}}</span>
+      </button>
+      <a href="/home?id={{nextDictId}}" class="action-btn circle-btn">
+        <img src="/arrowdown.svg" alt="Следующий" class="action-icon" />
+      </a>
+    </div>
+
+    <div class="glass-card">
+      <h2 class="card-title">{{dict.title}}</h2>
+      
+      <div class="card-field">
+        <span class="field-label">Нижняя граница :</span>
+        <span class="field-value">{{dict.lowlimit}}</span>
+      </div>
+      
+      <div class="card-field">
+        <span class="field-label">Верхняя граница :</span>
+        <span class="field-value">{{dict.highlimit}}</span>
+      </div>
+
+      <div class="card-field description-field">
+        <span class="field-label">Описание :</span>
+        <div class="description-header">
+          <p class="field-value">{{dict.description}}</p>
+          <img src="/chevronup.svg" alt="Развернуть" class="chevron-icon" />
+        </div>
+      </div>
+    </div>
+
+    {{> navbar}}
+
+  </div>
+
+</body>
+</html>

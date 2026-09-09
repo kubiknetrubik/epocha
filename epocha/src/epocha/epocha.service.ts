@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 enum DictStatus {
     draft = 0,
@@ -84,4 +84,50 @@ export class EpochaService {
     { id: 3, userId: 3, dictId: 3 },
     { id: 4, userId: 2, dictId: 3 }
     ];
+
+    getPublishedDicts(): Dict[] {
+        return this.dicts.filter((d) => d.status === DictStatus.published);
+    }
+
+    getDraftedDicts(): Dict[] {
+        return this.dicts.filter((d) => d.status === DictStatus.draft);
+    }
+
+    getDictById(id: number): Dict | undefined {
+        return this.dicts.find(
+            (d) => d.id === id && d.status === DictStatus.published,
+        );
+    }
+
+    getNextDictId(currentId: number): number {
+        const published = this.getPublishedDicts();
+        if (published.length === 0) return currentId;
+
+        const currentIndex = published.findIndex((d) => d.id === currentId);
+        if (currentIndex === -1 || currentIndex === published.length - 1) {
+            return published[0].id;
+        }
+        return published[currentIndex + 1].id;
+    }
+
+    getLikesCountForDict(dictId: number): number {
+        return this.likes.filter((l) => l.dictId === dictId).length;
+    }
+
+    getPublishedGrid(lowlimit?: string): Dict[] {
+        let list = this.getPublishedDicts();
+
+        if (lowlimit && lowlimit.trim() !== '') {
+            const limitNum = parseInt(lowlimit, 10);
+            if (!isNaN(limitNum)) {
+                list = list.filter((dict) => dict.lowlimit >= limitNum);
+            }
+        }     
+
+        return list.map((dict) => ({
+            ...dict,
+            likes: this.getLikesCountForDict(dict.id),
+        }));
+    }
+    
 }
