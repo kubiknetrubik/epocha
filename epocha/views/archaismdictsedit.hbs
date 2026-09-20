@@ -10,27 +10,6 @@
 
   <div class="phone-container screen-add">
     <div class="add-form">
-      
-      <div class="form-group">
-        <label class="form-label">Название</label>
-        <input type="text" class="form-input" value="{{dict.title}}" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Нижняя граница</label>
-        <input type="date" class="form-input" value="{{dict.startDate}}" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Верхняя граница</label>
-        <input type="date" class="form-input" value="{{dict.endDate}}" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Описание</label>
-        <textarea class="form-textarea" rows="3">{{dict.description}}</textarea>
-      </div>
-
       <div class="form-group">
         <label class="form-label">Видео</label>
         <div class="file-upload-row">
@@ -46,7 +25,26 @@
           <img src="{{dict.imageUrl}}" alt="Превью" class="media-preview" />
         </div>
       </div>
+      
+      <div class="form-group">
+        <label class="form-label">Название</label>
+        <input type="text" class="form-input" value="{{dict.title}}" />
+      </div>
 
+      <div class="form-group">
+        <label class="form-label">Начальная дата</label>
+        <input type="date" class="form-input" value="{{dict.startDate}}" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Конечная дата</label>
+        <input type="date" class="form-input" value="{{dict.endDate}}" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Описание</label>
+        <textarea class="form-textarea" rows="3">{{dict.description}}</textarea>
+      </div>
     </div>
 
     {{> navbar}}

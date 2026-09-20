@@ -21,33 +21,42 @@
       <a href="/archaism-dicts-feed?id={{nextDictId}}" class="action-btn circle-btn">
         <img src="/arrowdown.svg" alt="Следующий" class="action-icon" />
       </a>
+      <div class="sidebar-date-info">
+        <span class="date-label">Даты</span>
+        <span class="date-value">{{dict.startDate}}</span>
+        <span class="date-separator">—</span>
+        <span class="date-value">{{dict.endDate}}</span>
+      </div>
     </div>
 
     <div class="glass-card">
       <h2 class="card-title">{{dict.title}}</h2>
-      
-      <div class="card-field">
-        <span class="field-label">Нижняя граница :</span>
-        <span class="field-value">{{dict.startDate}}</span>
-      </div>
-      
-      <div class="card-field">
-        <span class="field-label">Верхняя граница :</span>
-        <span class="field-value">{{dict.endDate}}</span>
-      </div>
-
-      <div class="card-field description-field">
-        <span class="field-label">Описание :</span>
-        <div class="description-header">
-          <p class="field-value">{{dict.description}}</p>
-          <img src="/chevronup.svg" alt="Развернуть" class="chevron-icon" />
-        </div>
+      <div class="description-header">
+        <p class="card-description collapsed" id="descText">
+          {{dict.description}}
+        </p>
+        <button type="button" class="chevron-btn" id="toggleDescBtn" aria-label="Развернуть описание">
+          <img src="/chevronup.svg" alt="Ещё" class="chevron-icon" id="chevronIcon" />
+        </button>
       </div>
     </div>
 
     {{> navbar}}
 
   </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const toggleBtn = document.getElementById('toggleDescBtn');
+      const descText = document.getElementById('descText');
+      const descCard = document.getElementById('descCard');
 
+      if (toggleBtn && descText) {
+        toggleBtn.addEventListener('click', () => {
+          descText.classList.toggle('collapsed');
+          descCard.classList.toggle('expanded');
+        });
+      }
+    });
+  </script>
 </body>
 </html>
