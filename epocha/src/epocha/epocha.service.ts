@@ -6,7 +6,7 @@ enum DictStatus {
     deleted,
 };
 
-export interface Dict {
+export interface ArchaismDict {
   id: number;
   title: string;
   description: string;
@@ -24,9 +24,9 @@ export interface Like{
 }
 
 @Injectable()
-export class EpochaService {
+export class ArchaismDictsService {
     private readonly minioUrl = 'http://localhost:9000/media';
-    private dicts: Dict[] = [
+    private dicts: ArchaismDict[] = [
     {
         "id": 1,
         "title": "Словарь архаизмов и терминов Петровской эпохи",
@@ -85,15 +85,15 @@ export class EpochaService {
     { id: 4, userId: 2, dictId: 3 }
     ];
 
-    getPublishedDicts(): Dict[] {
+    getPublishedDicts(): ArchaismDict[] {
         return this.dicts.filter((d) => d.status === DictStatus.published);
     }
 
-    getDraftedDicts(): Dict[] {
+    getDraftedDicts(): ArchaismDict[] {
         return this.dicts.filter((d) => d.status === DictStatus.draft);
     }
 
-    getDictById(id: number): Dict | undefined {
+    getDictById(id: number): ArchaismDict | undefined {
         return this.dicts.find(
             (d) => d.id === id && d.status === DictStatus.published,
         );
@@ -114,7 +114,7 @@ export class EpochaService {
         return this.likes.filter((l) => l.dictId === dictId).length;
     }
 
-    getPublishedGrid(lowlimit?: string): Dict[] {
+    getPublishedGrid(lowlimit?: string): ArchaismDict[] {
         let list = this.getPublishedDicts();
 
         if (lowlimit && lowlimit.trim() !== '') {

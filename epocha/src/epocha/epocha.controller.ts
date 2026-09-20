@@ -1,22 +1,22 @@
 import { Controller, Get, Render, Redirect, Query } from '@nestjs/common';
-import { EpochaService, Dict } from './epocha.service';
-@Controller('home')
-export class EpochaHomeController {
-    constructor(private readonly epochaService: EpochaService) {}
+import { ArchaismDictsService, ArchaismDict } from './epocha.service';
+@Controller('archaism-dicts-feed')
+export class ArchaismDictsFeedController {
+    constructor(private readonly archaismDictsService: ArchaismDictsService) {}
 
     @Get(['', '/'])
-    @Render('home')
+    @Render('archaismdictsfeed')
     getHome(@Query('id') id?: string) {
-        const published = this.epochaService.getPublishedDicts();
+        const published = this.archaismDictsService.getPublishedDicts();
         const currentId = id ? parseInt(id, 10) : published[0]?.id;
 
-        let dict = this.epochaService.getDictById(currentId);
+        let dict = this.archaismDictsService.getDictById(currentId);
         if (!dict) {
             dict = published[0];
         }
 
-        const nextDictId = this.epochaService.getNextDictId(dict.id);
-        const likesCount = this.epochaService.getLikesCountForDict(dict.id);
+        const nextDictId = this.archaismDictsService.getNextDictId(dict.id);
+        const likesCount = this.archaismDictsService.getLikesCountForDict(dict.id);
 
         return {
             isHome: true,
@@ -27,14 +27,14 @@ export class EpochaHomeController {
     }
 }
 
-@Controller('add')
-export class EpochaAddController {
-    constructor(private readonly epochaService: EpochaService) {}
+@Controller('archaism-dicts-edit')
+export class ArchaismDictsEditorController {
+    constructor(private readonly archaismDictsService: ArchaismDictsService) {}
     
     @Get()
-    @Render('add')
+    @Render('archaismdictsedit')
     getAddPage() {
-        const draftDict = this.epochaService.getDraftedDicts();
+        const draftDict = this.archaismDictsService.getDraftedDicts();
 
         return {
             isAdd: true,
@@ -43,14 +43,14 @@ export class EpochaAddController {
     }
 }
 
-@Controller('grid')
-export class EpochaGridController {
-    constructor(private readonly epochaService: EpochaService) {}
+@Controller('archaism-dicts-catalog')
+export class ArchaismDictsCatalogController {
+    constructor(private readonly archaismDictsService: ArchaismDictsService) {}
     
     @Get()
-    @Render('grid')
+    @Render('archaismdictscatalog')
     getGridPage(@Query('lowlimit') lowlimit?: string) {
-        const dicts = this.epochaService.getPublishedGrid(lowlimit);
+        const dicts = this.archaismDictsService.getPublishedGrid(lowlimit);
         return {
             isAbout: true,
             dicts,

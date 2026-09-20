@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EpochaService } from './epocha.service';
+import { ArchaismDictsService } from './epocha.service';
 
 describe('EpochaService', () => {
-  let service: EpochaService;
+  let service: ArchaismDictsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EpochaService],
+      providers: [ArchaismDictsService],
     }).compile();
 
-    service = module.get<EpochaService>(EpochaService);
+    service = module.get<ArchaismDictsService>(ArchaismDictsService);
   });
 
   it('should be defined', () => {

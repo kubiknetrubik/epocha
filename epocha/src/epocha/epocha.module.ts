@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { EpochaService } from './epocha.service';
+import { ArchaismDictsService } from './epocha.service';
 
 @Module({
-  providers: [EpochaService]
+  providers: [ArchaismDictsService]
 })
 export class EpochaModule {}
