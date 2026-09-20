@@ -12,8 +12,8 @@ export interface ArchaismDict {
   description: string;
   imageUrl: string;
   videoUrl: string;
-  lowlimit: number;
-  highlimit: number;
+  startDate: string;
+  endDate: string;
   status: DictStatus;
 }
 
@@ -33,8 +33,8 @@ export class ArchaismDictsService {
         "description": "Свод заимствований и неологизмов начала XVIII века: морские термины, чины Табели о рангах",
         "imageUrl": `${this.minioUrl}/1.jpg`,
         "videoUrl": `${this.minioUrl}/1_vid.mp4`,
-        "lowlimit": 1700,
-        "highlimit": 1725,
+        "startDate": '1700-01-01',
+        "endDate": '1725-12-31',
         "status": DictStatus.published
     },
     {
@@ -43,8 +43,8 @@ export class ArchaismDictsService {
         "description": "Исторический словарь лексики древнерусского периода: старославянизмы, устаревшие названия частей тела и быта",
         "imageUrl": `${this.minioUrl}/2.jpg`,
         "videoUrl": `${this.minioUrl}/2_vid.mp4`,
-        "lowlimit": 1000,
-        "highlimit": 1699,
+        "startDate": '1000-01-01',
+        "endDate": '1699-12-31',
         "status": DictStatus.published
     },
     {
@@ -53,8 +53,8 @@ export class ArchaismDictsService {
         "description": "Аналитический модуль для текстов XIX века: дворянский быт, общественные институты и карамзинизмы (конкорс, боливар, оброк, гусар).",
         "imageUrl": `${this.minioUrl}/3.jpg`,
         "videoUrl": `${this.minioUrl}/3_vid.mp4`,
-        "lowlimit": 1800,
-        "highlimit": 1899,
+        "startDate": '1800-01-01',
+        "endDate": '1899-12-31',
         "status": DictStatus.published
     },
     {
@@ -63,8 +63,8 @@ export class ArchaismDictsService {
         "description": "Словарь авторских неологизмов и поэтических архаизмов поэтов-символистов и футуристов",
         "imageUrl": `${this.minioUrl}/4.jpg`,
         "videoUrl": `${this.minioUrl}/4_vid.mp4`,
-        "lowlimit": 1890,
-        "highlimit": 1920,
+        "startDate": '1890-01-01',
+        "endDate": '1920-12-31',
         "status": DictStatus.deleted
     },
     {
@@ -73,8 +73,8 @@ export class ArchaismDictsService {
         "description": "Разговорно-бытовая лексика и грамоты XVI–XVII веков: наименования одежды, утвари, монет и бытовых обрядов (челобитная, алтын, кафтан, ямщик).",
         "imageUrl": `${this.minioUrl}/5.jpg`,
         "videoUrl": `${this.minioUrl}/5_vid.mp4`,
-        "lowlimit": 1500,
-        "highlimit": 1699,
+        "startDate": '1500-01-01',
+        "endDate": '1699-12-31',
         "status": DictStatus.draft
     }
     ];
@@ -114,15 +114,12 @@ export class ArchaismDictsService {
         return this.likes.filter((l) => l.dictId === dictId).length;
     }
 
-    getPublishedGrid(lowlimit?: string): ArchaismDict[] {
+    getFilteredCatalog(startDateFilter?: string): ArchaismDict[] {
         let list = this.getPublishedDicts();
 
-        if (lowlimit && lowlimit.trim() !== '') {
-            const limitNum = parseInt(lowlimit, 10);
-            if (!isNaN(limitNum)) {
-                list = list.filter((dict) => dict.lowlimit >= limitNum);
-            }
-        }     
+        if (startDateFilter && startDateFilter.trim() !== '') {
+            list = list.filter((dict) => dict.startDate >= startDateFilter);
+        }
 
         return list.map((dict) => ({
             ...dict,

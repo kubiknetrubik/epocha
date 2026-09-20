@@ -12,18 +12,18 @@
     
     <form action="/archaism-dicts-catalog" method="GET" class="search-form" id="searchForm">
       <input 
-        type="number" 
-        name="lowlimit" 
+        type="date" 
+        name="startDateFilter" 
         class="search-input" 
         placeholder="Введите нижнюю границу" 
-        value="{{lowlimit}}" 
+        value="{{startDateFilter}}" 
         onkeydown="if(event.key === 'Enter') event.preventDefault();"
       />
       <button type="submit" class="search-search">Искать</button>
     </form>
 
     <div class="grid-container">
-      {{#each dicts}}
+      {{#each archaismDicts}}
         <a href="/home/{{this.id}}" class="grid-card">
           <div class="grid-card-img-wrapper">
             <img src="{{this.imageUrl}}" alt="{{this.title}}" class="grid-card-img" />
@@ -37,7 +37,7 @@
             </div>
 
             <div class="grid-card-limit">
-              Нижняя граница: {{this.lowlimit}}
+              Нижняя граница: {{this.startDate}}
             </div>
           </div>
         </a>

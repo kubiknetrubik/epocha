@@ -6,7 +6,7 @@ export class ArchaismDictsFeedController {
 
     @Get(['', '/'])
     @Render('archaismdictsfeed')
-    getHome(@Query('id') id?: string) {
+    getFeedPage(@Query('id') id?: string) {
         const published = this.archaismDictsService.getPublishedDicts();
         const currentId = id ? parseInt(id, 10) : published[0]?.id;
 
@@ -33,7 +33,7 @@ export class ArchaismDictsEditorController {
     
     @Get()
     @Render('archaismdictsedit')
-    getAddPage() {
+    getEditPage() {
         const draftDict = this.archaismDictsService.getDraftedDicts();
 
         return {
@@ -49,12 +49,12 @@ export class ArchaismDictsCatalogController {
     
     @Get()
     @Render('archaismdictscatalog')
-    getGridPage(@Query('lowlimit') lowlimit?: string) {
-        const dicts = this.archaismDictsService.getPublishedGrid(lowlimit);
+    getCatalogPage(@Query('startDateFilter') startDateFilter?: string) {
+        const archaismDicts = this.archaismDictsService.getFilteredCatalog(startDateFilter);
         return {
             isAbout: true,
-            dicts,
-            lowlimit: lowlimit || '',
+            archaismDicts,
+            startDateFilter: startDateFilter || '',
         };
     }
 }
