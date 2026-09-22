@@ -29,7 +29,8 @@
       </div>
     </div>
 
-    <div class="glass-card">
+    <!-- Добавлен id="descCard" -->
+    <div class="glass-card" id="descCard">
       <h2 class="card-title">{{dict.title}}</h2>
       <div class="description-header">
         <p class="card-description collapsed" id="descText">
@@ -50,7 +51,7 @@
       const descText = document.getElementById('descText');
       const descCard = document.getElementById('descCard');
 
-      if (toggleBtn && descText) {
+      if (toggleBtn && descText && descCard) {
         toggleBtn.addEventListener('click', () => {
           descText.classList.toggle('collapsed');
           descCard.classList.toggle('expanded');

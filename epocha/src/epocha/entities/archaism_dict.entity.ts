@@ -25,11 +25,11 @@ export class ArchaismDicts {
   @Column({ type: 'varchar', length: 255, nullable: true })
   videoUrl: string;
 
-  @Column({ type: 'date' })
-  startDate: string;
+  @Column({ type: 'date', nullable: true})
+  startDate: string | null;
 
-  @Column({ type: 'date' })
-  endDate: string;
+  @Column({ type: 'date', nullable: true})
+  endDate: string | null;
 
   @Column({ type: 'varchar', length: 20, default: DictStatus.DRAFT })
   status: DictStatus;

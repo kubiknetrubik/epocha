@@ -1,130 +1,165 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository, Like, MoreThanOrEqual} from 'typeorm'; // Исправлены импорты!
+import { InjectRepository} from '@nestjs/typeorm';
+import { ArchaismDicts, DictStatus } from './entities/archaism_dict.entity';
+import { DictLikes } from './entities/dict_like.entity';
 
-enum DictStatus {
-    draft = 0,
-    published,
-    deleted,
-};
-
-export interface ArchaismDict {
-  id: number;
-  title: string;
-  description: string;
-  imageUrl: string;
-  videoUrl: string;
-  startDate: string;
-  endDate: string;
-  status: DictStatus;
-}
-
-export interface Like{
-    id: number;
-    userId: number;
-    dictId: number;
-}
 
 @Injectable()
 export class ArchaismDictsService {
-    private readonly minioUrl = 'http://localhost:9000/media';
-    private dicts: ArchaismDict[] = [
-    {
-        "id": 1,
-        "title": "Словарь архаизмов и терминов Петровской эпохи",
-        "description": "Свод заимствований и неологизмов начала XVIII века. Включает подробные морские термины, чины Табели о рангах, административную лексику, а также описания бытовых новшеств и ассамблей. Настоящий академический справочник по реформам Петра Великого.",
-        "imageUrl": `${this.minioUrl}/1.jpg`,
-        "videoUrl": `${this.minioUrl}/1_vid.mp4`,
-        "startDate": '1700-01-01',
-        "endDate": '1725-12-31',
-        "status": DictStatus.published
-    },
-    {
-        "id": 2,
-        "title": "Словарь русского языка XI–XVII веков",
-        "description": "Исторический словарь лексики древнерусского периода: старославянизмы, устаревшие названия частей тела, предметов быта и одежды. Содержит толкование старых грамот, берестяных писем и летописных сводов для глубокого погружения в историю языка.",
-        "imageUrl": `${this.minioUrl}/2.jpg`,
-        "videoUrl": `${this.minioUrl}/2_vid.mp4`,
-        "startDate": '1000-01-01',
-        "endDate": '1699-12-31',
-        "status": DictStatus.published
-    },
-    {
-        "id": 3,
-        "title": "Словарь лексики Пушкинской поры и XIX века",
-        "description": "Аналитический модуль для текстов XIX века: дворянский быт, общественные институты и карамзинизмы (конкорс, боливар, оброк, гусар). Помогает разобраться в нюансах поэтической и прозаической речи поэтов Золотого века русской литературы.",
-        "imageUrl": `${this.minioUrl}/3.jpg`,
-        "videoUrl": `${this.minioUrl}/3_vid.mp4`,
-        "startDate": '1800-01-01',
-        "endDate": '1899-12-31',
-        "status": DictStatus.published
-    },
-    {
-        "id": 4,
-        "title": "Корпус неологизмов Серебряного века",
-        "description": "Специализированный словарь авторских неологизмов, поэтических архаизмов и окказионализмов поэтов-символистов, акмеистов и футуристов. Содержит речевые эксперименты Хлебникова, Маяковского, Северянина и других ключевых авторов эпохи.",
-        "imageUrl": `${this.minioUrl}/4.jpg`,
-        "videoUrl": `${this.minioUrl}/4_vid.mp4`,
-        "startDate": '1890-01-01',
-        "endDate": '1920-12-31',
-        "status": DictStatus.deleted
-    },
-    {
-        "id": 5,
-        "title": "Словарь обиходного русского языка Московской Руси",
-        "description": "Разговорно-бытовая лексика, духовные и челобитные грамоты XVI–XVII веков: точные наименования традиционной одежды, домашней утвари, монет, таможенных пошлин и бытовых обрядов (челобитная, алтын, кафтан, ямщик, посох).",
-        "imageUrl": `${this.minioUrl}/5.jpg`,
-        "videoUrl": `${this.minioUrl}/5_vid.mp4`,
-        "startDate": '1500-01-01',
-        "endDate": '1699-12-31',
-        "status": DictStatus.draft
-    }
-    ];
-    private likes: Like[] = [
-    { id: 1, userId: 1, dictId: 1 },
-    { id: 2, userId: 1, dictId: 2 },
-    { id: 3, userId: 3, dictId: 3 },
-    { id: 4, userId: 2, dictId: 3 }
-    ];
+    private readonly DEFAULT_IMAGE = '/basepicture.jpg';
+    private readonly DEFAULT_VIDEO = '/basevideo.mp4';
 
-    getPublishedDicts(): ArchaismDict[] {
-        return this.dicts.filter((d) => d.status === DictStatus.published);
-    }
+    constructor(
+        @InjectRepository(ArchaismDicts)
+        private dictRepository: Repository<ArchaismDicts>,
+        @InjectRepository(DictLikes)
+        private likeRepository: Repository<DictLikes>,
+    ) {}
 
-    getDraftedDicts(): ArchaismDict[] {
-        return this.dicts.filter((d) => d.status === DictStatus.draft);
-    }
-
-    getDictById(id: number): ArchaismDict | undefined {
-        return this.dicts.find(
-            (d) => d.id === id && d.status === DictStatus.published,
-        );
-    }
-
-    getNextDictId(currentId: number): number {
-        const published = this.getPublishedDicts();
-        if (published.length === 0) return currentId;
-
-        const currentIndex = published.findIndex((d) => d.id === currentId);
-        if (currentIndex === -1 || currentIndex === published.length - 1) {
-            return published[0].id;
-        }
-        return published[currentIndex + 1].id;
-    }
-
-    getLikesCountForDict(dictId: number): number {
-        return this.likes.filter((l) => l.dictId === dictId).length;
-    }
-
-    getFilteredCatalog(startDateFilter?: string): ArchaismDict[] {
-        let list = this.getPublishedDicts();
-
-        if (startDateFilter && startDateFilter.trim() !== '') {
-            list = list.filter((dict) => dict.startDate >= startDateFilter);
-        }
-
-        return list.map((dict) => ({
+    private applyDefaultMedia(dict: any) {
+        if (!dict) return null;
+        return {
             ...dict,
-            likes: this.getLikesCountForDict(dict.id),
-        }));
+            imageUrl: dict.imageUrl && dict.imageUrl.trim() !== '' ? dict.imageUrl : this.DEFAULT_IMAGE,
+            videoUrl: dict.videoUrl && dict.videoUrl.trim() !== '' ? dict.videoUrl : this.DEFAULT_VIDEO,
+        };
     }
-    
+
+    async getPublishedDicts(startDateFilter?: string) {
+        const whereCondition: any = { status: DictStatus.PUBLISHED };
+        if (startDateFilter && startDateFilter.trim() !== '') {
+            whereCondition.startDate = MoreThanOrEqual(startDateFilter.trim());
+        }
+
+        const dicts = await this.dictRepository.find({
+            where: whereCondition,
+            relations: { likes: true },
+            order: { createdAt: 'DESC' },
+        });
+
+        return dicts.map((d) => {
+            const formatted = this.applyDefaultMedia(d);
+            return {
+                ...formatted,
+                likesCount: d.likes ? d.likes.length : 0,
+            };
+        });
+    }
+
+    async getUserDraft(userId: number) {
+        const draft = await this.dictRepository.findOne({
+            where: { userId, status: DictStatus.DRAFT },
+        });
+        if (!draft) {
+            return null;
+        }
+        return this.applyDefaultMedia(draft);
+    }
+
+    async getServiceById(id: number) {
+        const dict = await this.dictRepository.findOne({
+            where: { id },
+            relations: { likes: true },
+        });
+        if (!dict || dict.status === DictStatus.DELETED) {
+            throw new NotFoundException(`Словарь с ID ${id} не найден или удален`);
+        }
+
+        const formatted = this.applyDefaultMedia(dict);
+        return {
+            ...formatted,
+            likesCount: dict.likes ? dict.likes.length : 0,
+        };
+    }
+
+    async getOrCreateDraft(
+        userId: number,
+        data: { title?: string; description?: string; startDate?: string; endDate?: string; imageUrl?: string; videoUrl?: string },
+    ) {
+        let draft = await this.dictRepository.findOne({
+            where: { userId, status: DictStatus.DRAFT },
+        });
+        const parseDate = (dateStr?: string) => {
+            return dateStr && dateStr.trim() !== '' ? dateStr : null;
+        };
+        if (!draft) {
+            draft = this.dictRepository.create({
+                title: data.title && data.title.trim() !== '' ? data.title : 'Новый словарь (Черновик)',
+                description: data.description || '',
+                startDate: parseDate(data.startDate),
+                endDate: parseDate(data.endDate),
+                imageUrl: '',
+                videoUrl: '',
+                status: DictStatus.DRAFT,
+                userId: userId,
+            });
+        }else{
+            if (data.title !== undefined) draft.title = data.title;
+            if (data.description !== undefined) draft.description = data.description;
+            if (data.startDate !== undefined) draft.startDate = data.startDate;
+            if (data.endDate !== undefined) draft.endDate = data.endDate;
+            if (data.imageUrl !== undefined) draft.imageUrl = data.imageUrl;
+            if (data.videoUrl !== undefined) draft.videoUrl = data.videoUrl;
+        }
+        draft = await this.dictRepository.save(draft);
+        return this.applyDefaultMedia(draft);
+    }
+
+    async publishService(
+        id: number,
+        data: { title: string; description: string; startDate: string; endDate: string },
+    ) {
+        const dict = await this.dictRepository.findOne({ where: { id } });
+
+        if (!dict || dict.status === DictStatus.DELETED) {
+            throw new NotFoundException(`Словарь с ID ${id} не найден или удален`);
+        }
+
+        dict.title = data.title;
+        dict.description = data.description;
+        dict.startDate = data.startDate;
+        dict.endDate = data.endDate;
+        dict.status = DictStatus.PUBLISHED;
+        dict.publishedAt = new Date();
+
+        const saved = await this.dictRepository.save(dict);
+        return this.applyDefaultMedia(saved);
+    }
+
+    async deleteServiceViaCursor(id: number, userId: number): Promise<{ message: string }> {
+        try {
+            await this.dictRepository.query(`BEGIN`);
+
+            await this.dictRepository.query(
+                `DECLARE delete_cursor CURSOR FOR 
+                SELECT id FROM archaism_dicts 
+                WHERE id = $1 AND "userId" = $2 AND status != 'deleted'`,
+                [id, userId],
+            );
+
+            const rows = await this.dictRepository.query(`FETCH NEXT FROM delete_cursor`);
+
+            if (!rows || rows.length === 0) {
+                await this.dictRepository.query(`CLOSE delete_cursor`);
+                await this.dictRepository.query(`ROLLBACK`);
+                throw new NotFoundException(`Заявка с ID ${id} не найдена или уже была удалена`);
+            }
+
+            await this.dictRepository.query(
+                `UPDATE archaism_dicts 
+                SET status = $1, "publishedAt" = NULL
+                WHERE id = $2`,
+                [DictStatus.DELETED, id],
+            );
+
+            await this.dictRepository.query(`CLOSE delete_cursor`);
+            await this.dictRepository.query(`COMMIT`);
+
+            return { message: `Заявка с ID ${id} успешно удалена через SQL-курсор` };
+        } catch (err) {
+            await this.dictRepository.query(`ROLLBACK`).catch(() => {});
+            throw err;
+        }
+    }
 }

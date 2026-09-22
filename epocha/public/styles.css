@@ -167,6 +167,21 @@ body {
   transform: rotate(180deg);
 }
 
+.grid-card-link,
+.grid-card-link:visited,
+.grid-card-link:hover,
+.grid-card-link:active {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.grid-card-title,
+.likes-counter,
+.grid-card-limit {
+  color: #ffffff; 
+  text-decoration: none;
+}
 
 
 .glass-card {
@@ -296,7 +311,7 @@ body {
 
 .screen-add {
   background-color: var(--white);
-  padding: 24px 16px 90px 16px;
+  padding: 1px 16px 90px 16px;
   overflow-y: auto;
 }
 
@@ -314,7 +329,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 5px;
+  gap: 1px;
 }
 
 .form-label {
@@ -367,7 +382,7 @@ body {
 
 .screen-grid {
   background-color: var(--white);
-  padding: 16px 16px 80px 16px;
+  padding: 16px 16px 140px 16px;
   display: flex;
   flex-direction: column;
   gap: 16px;

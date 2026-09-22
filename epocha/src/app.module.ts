@@ -22,7 +22,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
     }),
   ],
-  controllers: [ArchaismDictsFeedController, ArchaismDictsEditorController, ArchaismDictsCatalogController],
-  providers: [ArchaismDictsService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
