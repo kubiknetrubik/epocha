@@ -10,6 +10,9 @@ export class Users {
   @Column({ type: 'varchar', length: 20 })
   username: string;
 
+  @Column({ type: 'varchar', length: 255 })
+  password: string;
+
   @OneToMany(() => ArchaismDicts, (dict) => dict.user)
   dicts: ArchaismDicts[];
 

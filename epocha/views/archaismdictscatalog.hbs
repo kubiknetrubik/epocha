@@ -9,7 +9,7 @@
 <body>
 
   <div class="phone-container screen-grid">
-    
+   <div class="scroll-area">
     <form action="/archaism-dicts-catalog" method="GET" class="search-form" id="searchForm">
       <input 
         type="date" 
@@ -19,7 +19,7 @@
         value="{{startDateFilter}}" 
         onkeydown="if(event.key === 'Enter') event.preventDefault();"
       />
-      <button type="submit" class="search-search">Искать</button>
+      <button type="submit" class="btn">Искать</button>
     </form>
 
     <div class="grid-container">
@@ -38,22 +38,20 @@
               </div>
 
               <div class="grid-card-limit">
-                Нижняя граница: {{this.startDate}}
+                Нижняя граница: {{formatDate this.startDate}}
               </div>
             </div>
           </a>
 
           {{#if (eq this.userId ../currentUserId)}}
             <form action="/archaism-dicts-catalog/delete-cursor/{{this.id}}" method="POST" class="delete-form">
-              <button type="submit" class="btn-delete" onclick="return confirm('Удалить этот словарь?');">
-                  Удалить
-              </button>
+              <button type="submit" class="btn btn--light btn--del" onclick="return confirm('Удалить этот словарь?');">Удалить</button>
             </form>
           {{/if}}
         </div>
       {{/each}}
     </div>
-
+   </div>
     {{> navbar}}
   </div>
 
