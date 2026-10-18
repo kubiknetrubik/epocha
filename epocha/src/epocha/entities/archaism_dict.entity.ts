@@ -16,13 +16,13 @@ export class ArchaismDicts {
   @Column({ type: 'varchar', length: 50 })
   title: string;
 
-  @Column({ type: 'text' })
-  description: string;
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', length: 255 })
   imageUrl: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', length: 255 })
   videoUrl: string;
 
   @Column({ type: 'date', nullable: true})

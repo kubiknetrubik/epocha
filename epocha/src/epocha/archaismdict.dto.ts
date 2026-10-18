@@ -17,11 +17,10 @@ export class DictFiltersDto {
  
 
 export class FeedQueryDto {
-  @IsOptional()
   @Type(() => Number)
-  @IsInt({ message: 'id должен быть целым числом' })
-  @Min(1)
-  id?: number;
+  @IsInt({ message: 'id обязателен и должен быть целым числом' })
+  @Min(1, { message: 'id должен быть не меньше 1' })
+  id: number;
  
   @IsOptional()
   @Transform(({ value }) => value === true || value === 'true' || value === '1')

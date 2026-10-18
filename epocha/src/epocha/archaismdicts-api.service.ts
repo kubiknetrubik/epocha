@@ -41,7 +41,7 @@ export class DictsApiService {
     return items.map((d) => this.serializer.list(d, userId));
   }
 
-  async feed(id?: number, next = false) {
+  async feed(id: number, next = false) {
     const userId = getCurrentUser().id;
     const published = await this.dicts.find({
       where: { status: DictStatus.PUBLISHED },
@@ -50,12 +50,9 @@ export class DictsApiService {
     });
     if (published.length === 0) throw new NotFoundException('Лента пуста');
 
-    let index = 0;
-    if (id !== undefined) {
-      index = published.findIndex((d) => d.id === id);
-      if (index < 0) throw new NotFoundException(`Словарь с ID ${id} не найден в ленте`);
-      if (next) index = (index + 1) % published.length;
-    }
+    let index = published.findIndex((d) => d.id === id);
+    if (index < 0) throw new NotFoundException(`Словарь с ID ${id} не найден в ленте`);
+    if (next) index = (index + 1) % published.length;
     const nextId = published[(index + 1) % published.length].id;
     return this.serializer.feed(published[index], userId, nextId);
   }
@@ -93,7 +90,7 @@ export class DictsApiService {
         saved = await this.dicts.save(
           this.dicts.create({
             title: dto.title,
-            description: '',
+            description: null,
             startDate: null,
             endDate: null,
             imageUrl: newImage,

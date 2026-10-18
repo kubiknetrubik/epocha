@@ -15,7 +15,7 @@ export class DictListItemDto {
 export class DictDetailDto {
   id: number;
   title: string;
-  description: string;
+  description: string | null;
   imageUrl: string | null;
   videoUrl: string | null;
   startDate: string | null;
