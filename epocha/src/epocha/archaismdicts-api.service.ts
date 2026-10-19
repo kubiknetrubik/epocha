@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, MoreThanOrEqual, Repository } from 'typeorm';
-import { getCurrentUser } from '../common/current-user';
 import { ArchaismDicts, DictStatus } from './entities/archaism_dict.entity';
 import { DictLikes } from './entities/dict_like.entity';
 import { DictSerializer } from './archaismdict.serializer';
@@ -28,8 +27,8 @@ export class DictsApiService {
     private readonly serializer: DictSerializer,
   ) {}
 
-  async list(filters: DictFiltersDto) {
-    const userId = getCurrentUser().id;
+  /** userId = undefined для гостя */
+  async list(filters: DictFiltersDto, userId?: number) {
     const where: FindOptionsWhere<ArchaismDicts> = { status: DictStatus.PUBLISHED };
     if (filters.startDate) where.startDate = MoreThanOrEqual(filters.startDate);
 
@@ -41,8 +40,7 @@ export class DictsApiService {
     return items.map((d) => this.serializer.list(d, userId));
   }
 
-  async feed(id: number, next = false) {
-    const userId = getCurrentUser().id;
+  async feed(id: number, next = false, userId?: number) {
     const published = await this.dicts.find({
       where: { status: DictStatus.PUBLISHED },
       relations: { likes: true },
@@ -54,18 +52,16 @@ export class DictsApiService {
     if (index < 0) throw new NotFoundException(`Словарь с ID ${id} не найден в ленте`);
     if (next) index = (index + 1) % published.length;
     const nextId = published[(index + 1) % published.length].id;
-    return this.serializer.feed(published[index], userId, nextId);
+    return this.serializer.feed(published[index], nextId, userId);
   }
 
-  async getDraft() {
-    const userId = getCurrentUser().id;
+  async getDraft(userId: number) {
     const draft = await this.dicts.findOne({ where: { userId, status: DictStatus.DRAFT } });
     if (!draft) throw new NotFoundException('Черновик не найден');
     return this.serializer.detail(draft, userId);
   }
 
-  async createDraft(dto: CreateDictDto, files: UploadedMedia) {
-    const userId = getCurrentUser().id;
+  async createDraft(dto: CreateDictDto, files: UploadedMedia, userId: number) {
     const image = files?.image?.[0];
     const video = files?.video?.[0];
 
@@ -111,9 +107,8 @@ export class DictsApiService {
     return this.serializer.detail(saved, userId);
   }
 
-  async publish(id: number, dto: PublishDictDto) {
-    const userId = getCurrentUser().id;
-    const dict = await this.getOwned(id);
+  async publish(id: number, dto: PublishDictDto, userId: number) {
+    const dict = await this.getOwned(id, userId);
     if (dict.status !== DictStatus.DRAFT) {
       throw new ConflictException('Опубликовать можно только черновик');
     }
@@ -134,14 +129,13 @@ export class DictsApiService {
     return this.serializer.detail(await this.dicts.save(dict), userId);
   }
 
-  async remove(id: number) {
-    const dict = await this.getOwned(id);
+  async remove(id: number, userId: number) {
+    const dict = await this.getOwned(id, userId);
     await this.dicts.update(dict.id, { status: DictStatus.DELETED });
     return { id, message: `Словарь с ID ${id} удалён` };
   }
 
-  async setLike(id: number, dto: LikeDictDto) {
-    const userId = getCurrentUser().id;
+  async setLike(id: number, dto: LikeDictDto, userId: number) {
     const dict = await this.dicts.findOne({ where: { id } });
     if (!dict || dict.status !== DictStatus.PUBLISHED) {
       throw new NotFoundException(`Опубликованный словарь с ID ${id} не найден`);
@@ -158,12 +152,12 @@ export class DictsApiService {
     return { dictId: id, liked: dto.like, likesCount };
   }
 
-  private async getOwned(id: number): Promise<ArchaismDicts> {
+  private async getOwned(id: number, userId: number): Promise<ArchaismDicts> {
     const dict = await this.dicts.findOne({ where: { id } });
     if (!dict || dict.status === DictStatus.DELETED) {
       throw new NotFoundException(`Словарь с ID ${id} не найден`);
     }
-    if (dict.userId !== getCurrentUser().id) {
+    if (dict.userId !== userId) {
       throw new ForbiddenException('Это не ваш словарь');
     }
     return dict;

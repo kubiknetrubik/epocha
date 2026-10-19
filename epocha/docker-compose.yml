@@ -24,6 +24,14 @@ services:
       - minio-data:/data
     command: server /data --console-address ":9001"
 
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
   adminer:
     image: adminer:latest
     ports:
@@ -34,3 +42,4 @@ services:
 volumes:
   postgres_data:
   minio-data:
+  redis-data:
