@@ -27,7 +27,6 @@ export class DictsApiService {
     private readonly serializer: DictSerializer,
   ) {}
 
-  /** userId = undefined для гостя */
   async list(filters: DictFiltersDto, userId?: number) {
     const where: FindOptionsWhere<ArchaismDicts> = { status: DictStatus.PUBLISHED };
     if (filters.startDate) where.startDate = MoreThanOrEqual(filters.startDate);
